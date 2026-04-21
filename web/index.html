@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mapa H3 Soportes</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/h3-js@4.1.0/dist/h3-js.umd.js"></script>
+
+<style>
+  #map { height: 100vh; }
+  .control {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="control">
+  <select id="nivel">
+    <option value="h3">H3</option>
+    <option value="h6" selected>H6</option>
+    <option value="h8">H8</option>
+  </select>
+</div>
+
+<div id="map"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
