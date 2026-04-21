@@ -1,5 +1,3 @@
-const BASE = "https://victorcarvajalcl.github.io/soportestienda";
-
 const map = L.map('map').setView([-33.45, -70.65], 11);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
@@ -9,11 +7,17 @@ let layer;
 
 function cargar(nivel) {
 
+  // eliminar capa anterior
   if (layer) map.removeLayer(layer);
 
-  fetch(`${BASE}/data/soportes_${nivel}.csv`)
-    .then(res => res.text())
+  fetch(`data/soportes_${nivel}.csv`)
+    .then(res => {
+      if (!res.ok) throw new Error("No se pudo cargar CSV");
+      return res.text();
+    })
     .then(csv => {
+
+      console.log("CSV cargado"); // debug
 
       const rows = csv.trim().split("\n").slice(1);
 
@@ -31,20 +35,25 @@ function cargar(nivel) {
         if (!h || isNaN(total)) return;
 
         try {
+
           const boundary = h3.cellToBoundary(h, true);
           const latlngs = boundary.map(c => [c[0], c[1]]);
 
           const color =
-            total > 500 ? "red" :
-            total > 200 ? "orange" :
-            "green";
+            total > 500 ? "#ff0000" :
+            total > 200 ? "#ff9900" :
+            "#00cc66";
 
           L.polygon(latlngs, {
             color: color,
+            fillColor: color,
             fillOpacity: 0.5,
             weight: 1
           })
-          .bindPopup(`Soportes: ${total}`)
+          .bindPopup(`
+            <b>H3:</b> ${h}<br>
+            <b>Soportes:</b> ${total}
+          `)
           .addTo(layer);
 
         } catch (e) {
@@ -55,11 +64,16 @@ function cargar(nivel) {
 
       layer.addTo(map);
 
+      console.log("Hexágonos dibujados:", rows.length);
+
     })
-    .catch(err => console.error("Error:", err));
+    .catch(err => {
+      console.error("ERROR:", err);
+      alert("No se pudo cargar la data");
+    });
 }
 
-// inicial
+// cargar inicial
 cargar("h6");
 
 // selector
